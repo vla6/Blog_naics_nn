@@ -1,5 +1,6 @@
-3-4 use sbnn_model functions (simplify notebooks), rerun
+Custom data generator
 
-Check results 03-06
+Change 10 to test with no randomization
+Do I need to specify shuffle or on epoch end?
 
-Then go on to custom data generator
+Clean up sbnn_model
