@@ -103,24 +103,28 @@ def process_history(history):
 
 #
 # Custom data generator class
-# Code written with some assistance from ChatGPT
+# Inject missing codes into the training data at random for each epoch
 #
 # See also https://www.tensorflow.org/versions/r2.1/api_docs/python/tf/keras/utils/Sequence
 #
 
+    
 class CatInjectGenerator(Sequence):
     def __init__(self, 
                  x_set, y_set, 
                  batch_size, 
                  categorical_columns = None, 
-                 zero_injection_rate=0.1, shuffle=True):
+                 injection_rate=0.1, 
+                 injection_value = 1,
+                 shuffle = True):
         self.x = x_set
         self.y = y_set
         self.batch_size = batch_size
         self.categorical_columns = categorical_columns
-        self.zero_injection_rate = zero_injection_rate
-        self.shuffle = shuffle
+        self.injection_rate = injection_rate
+        self.injection_value = injection_value
         self.indices = np.arange(len(self.x))
+        self.shuffle = shuffle
         self.on_epoch_end()
 
     def __len__(self):
@@ -132,62 +136,22 @@ class CatInjectGenerator(Sequence):
         batch_y = self.y.iloc[batch_indices]
 
         # Separate categorical and non-categorical inputs
-        batch_cat_x = [batch_x[col].values for col in self.categorical_columns]
+        batch_cat_x = [batch_x[col].values.copy() for col in self.categorical_columns]
         batch_non_cat_x = batch_x.drop(columns=self.categorical_columns).values
+        
+        # Inject zeros into categorical features
+        if self.injection_rate > 0:
+            batch_cat_x = self.inject_values(batch_cat_x)
 
         # Return X list and y values
         return [batch_non_cat_x] + batch_cat_x, batch_y.values
 
-
+    def inject_values(self, batch_cat_x):
+        for i in range(len(batch_cat_x)):
+            mask = np.random.rand(*batch_cat_x[i].shape) < self.injection_rate
+            batch_cat_x[i][mask] = self.injection_value
+        return batch_cat_x
+    
     def on_epoch_end(self):
         if self.shuffle:
             np.random.shuffle(self.indices)
-            #pass
-
-    def inject_zeros(self, batch_cat_x):
-        for i in range(len(batch_cat_x)):
-            mask = np.random.rand(*batch_cat_x[i].shape) < self.zero_injection_rate
-            batch_cat_x[i][mask] = 0
-        return batch_cat_x
-
-
-class CatInjectGenerator2(Sequence):
-    """ Data generator to inject encoding values into categorical inputs 
-    at each  training epoch.  The injected values will usually be codes
-    that represent unseen and/or null categories, to help the model
-    learn how to compensate for missing/unknown information.  """
-    
-    def __init__(self, x_set, y_set, cat_features, batch_size, 
-                 inject_value = 1, inject_fraction=0.1):
-        self.x, self.y = x_set, y_set
-        self.cat_features = cat_features  # List of indices of categorical features
-        self.batch_size = batch_size
-        self.inject_value = inject_value  # Value to be inserted into categoricals
-        self.inject_fraction = inject_fraction # Fraction of cases to modify
-        
-        #self.indices = np.arange(len(self.x[0]))
-
-    def __len__(self):
-        return int(np.ceil(len(self.x[0]) / float(self.batch_size)))
-
-    def __getitem__(self, idx):
-        
-        batch_x = [x.iloc[idx * self.batch_size:(idx + 1) * self.batch_size, :] for x in self.x]
-        batch_y = self.y.iloc[idx * self.batch_size:(idx + 1) * self.batch_size]
-        
-        print(f"idx {idx}")
-        print(f"batch size: {self.batch_size}")
-        print(f"batch shapes: {' '.join([str(len(x)) for x in batch_x])}")
-
-        # Modify only categorical features (entity embeddings)
-        for i in self.cat_features:
-            # Randomly select a percentage of data indices to modify
-            num_samples = len(batch_x[i])
-            print(num_samples)
-            num_inject_cases = int(self.inject_fraction * num_samples)
-            print(num_inject_cases)
-            inject_indices = np.random.choice(num_samples, num_inject_cases, replace=False)
-            #print(inject_indices)
-            #batch_x[i][inject_indices] = self.inject_value
-        
-        return batch_x, batch_y
