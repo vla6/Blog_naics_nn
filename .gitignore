@@ -1,6 +1,8 @@
 tmp/
 A_target_count_encoding/tmp/
 
+to_do.txt
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

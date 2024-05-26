@@ -1,5 +1,0 @@
-3-4 use sbnn_model functions (simplify notebooks), rerun
-
-Check results 03-06
-
-Then go on to custom data generator

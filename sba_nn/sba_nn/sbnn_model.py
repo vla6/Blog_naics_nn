@@ -19,6 +19,8 @@ from tensorflow.keras import layers, optimizers, losses, metrics, Model
 from tensorflow.keras.layers import Dense, Dropout, Input, Embedding, concatenate, Flatten
 import tensorflow.keras.metrics as km
 
+from keras.utils import Sequence
+
 #
 # Create model with embedding(s)
 #
@@ -98,3 +100,58 @@ def process_history(history):
         pass
     
     return this_history_df
+
+#
+# Custom data generator class
+# Inject missing codes into the training data at random for each epoch
+#
+# See also https://www.tensorflow.org/versions/r2.1/api_docs/python/tf/keras/utils/Sequence
+#
+
+    
+class CatInjectGenerator(Sequence):
+    def __init__(self, 
+                 x_set, y_set, 
+                 batch_size, 
+                 categorical_columns = None, 
+                 injection_rate=0.1, 
+                 injection_value = 1,
+                 shuffle = True):
+        self.x = x_set
+        self.y = y_set
+        self.batch_size = batch_size
+        self.categorical_columns = categorical_columns
+        self.injection_rate = injection_rate
+        self.injection_value = injection_value
+        self.indices = np.arange(len(self.x))
+        self.shuffle = shuffle
+        self.on_epoch_end()
+
+    def __len__(self):
+        return int(np.ceil(len(self.x) / float(self.batch_size)))
+
+    def __getitem__(self, idx):
+        batch_indices = self.indices[idx * self.batch_size:(idx + 1) * self.batch_size]
+        batch_x = self.x.iloc[batch_indices]
+        batch_y = self.y.iloc[batch_indices]
+
+        # Separate categorical and non-categorical inputs
+        batch_cat_x = [batch_x[col].values.copy() for col in self.categorical_columns]
+        batch_non_cat_x = batch_x.drop(columns=self.categorical_columns).values
+        
+        # Inject zeros into categorical features
+        if self.injection_rate > 0:
+            batch_cat_x = self.inject_values(batch_cat_x)
+
+        # Return X list and y values
+        return [batch_non_cat_x] + batch_cat_x, batch_y.values
+
+    def inject_values(self, batch_cat_x):
+        for i in range(len(batch_cat_x)):
+            mask = np.random.rand(*batch_cat_x[i].shape) < self.injection_rate
+            batch_cat_x[i][mask] = self.injection_value
+        return batch_cat_x
+    
+    def on_epoch_end(self):
+        if self.shuffle:
+            np.random.shuffle(self.indices)
