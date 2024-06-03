@@ -205,18 +205,17 @@ class NNImputer():
         Quantile transforms many-level fields, and min/max scales all 
         fields.  Input fields must be numeric and set during initialization."""
         
+        # Create/fit the NAICS encoder
+        trans_data1 = self.naics_encoder_create_fit(data, transform = transform)
+        
         if self.features_in is None:
-            self.features_in = [c for c in data.select_dtypes('number').columns \
-                                if c != self.naics_features]
+            return trans_data1
         
         # Create/fit median imputer for missing data, transform training data
-        trans_data1 = self.median_imputer_create_fit(data, transform=transform)
+        trans_data2 = self.median_imputer_create_fit(trans_data1, transform=transform)
 
         # Figure out which features to scale and not scale
-        self.set_scaled_features(trans_data1)
-        
-        # Create/fit the NAICS encoder
-        trans_data2 = self.naics_encoder_create_fit(trans_data1, transform = transform)
+        self.set_scaled_features(trans_data2)
         
         # Crete/fit the quantile scaler
         trans_data3 = self.quantile_scaler_create_fit(trans_data2, transform = transform)
@@ -226,7 +225,6 @@ class NNImputer():
         # Create / fit the minmax scaler
         trans_data4 = self.minmax_scaler_create_fit(trans_data3, transform = transform)
         
-
         # Save the features after transform
         self.features_out = list(trans_data4.columns)
         
@@ -240,9 +238,12 @@ class NNImputer():
     def transform(self, data):
         """Transform dataset containing features, which will have null
         values median filled, and scaled. """
-        data_1 = self.median_imputer_transform(data)
-        data_2 = self.quantile_scaler_transform(data_1)
-        data_3 = self.naics_encoder_transform(data_2)
+        data_1 = self.naics_encoder_transform(data)
+        if self.features_in is None:
+            return data_1
+        data_2 = self.median_imputer_transform(data_1)
+        data_3 = self.quantile_scaler_transform(data_2)
+        
         return self.minmax_scaler_transform(data_3)
     
     def __init__(self, features = None, 
@@ -257,10 +258,8 @@ class NNImputer():
           Inputs:
             features:  List of input features affected by the transformations.
               Other features in data passed to fit/transform functions (not including the
-              NAICS feature).  Other features in the data will  be ignored.  If None, all 
-              numeric training data features are used 
-              (and all data sets passed to fit or transform must have the
-              same features)
+              NAICS feature).  Other features in the data will  be ignored.  If None, only 
+              NAICS processing is done.
             num_levels_scale: If a feature contains this or fewer unique values,
               I use minmax scaling.  Above the threshold, quantile scaling is used.
             num_levels_scale_sample:  For efficiency on large data sets, a sample
@@ -275,7 +274,13 @@ class NNImputer():
             naics_unknown: Value to be used for unknown/unseen NAICS in the final dataset
               
         """
-        self.features_in = features # Predictors, except for NAICS
+        
+        # Predictors, except for NAICS
+        if isinstance(features, list) or features is None:
+            self.features_in = features
+        else:
+            self.features_in = [features]
+
         self.num_levels_scale = num_levels_scale
         self.num_levels_scale_sample = num_levels_scale_sample
         self.quantile_levels = quantile_levels

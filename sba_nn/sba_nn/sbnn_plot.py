@@ -16,9 +16,9 @@ import textwrap
 #
 
 
-def plot_defaults():
+def plot_defaults(style='seaborn-v0_8-white'):
     """ Set default plot parameters"""
-    plt.style.use('seaborn-v0_8-white')
+    plt.style.use(style)
     mpl.rcParams.update({'font.size': 16})
     mpl.rcParams.update({'axes.titlesize': 18})
 
@@ -34,7 +34,8 @@ def plot_metric_dependence(metrics, index='rate',
                           yformatter = None,
                           ylabel = None,
                           xlabel = None,
-                          ax = None):
+                          ax = None,
+                          marker=None):
     
     use_ax = ax
     if use_ax is None:                       
@@ -53,7 +54,7 @@ def plot_metric_dependence(metrics, index='rate',
     met_pivot = met_pivot[reversed(choice)] 
     
     
-    met_pivot.plot(ax=ax)
+    met_pivot.plot(ax=ax, marker=marker)
     
     ax.legend(frameon=True)
     if xformatter is not None:
