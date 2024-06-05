@@ -3,7 +3,9 @@ Work for Towards Data Science
 
 Demonstrating random injection of "unseen" encoding values during neural network training using a custom data generator.  
 
-## Towards Data Science "Data Disruptions to Elevate Entity Embeddings"
+## Towards Data Science [Data Disruptions to Elevate Entity Embeddings](https://towardsdatascience.com/data-disruptions-to-elevate-entity-embeddings-b1ddf86a3c95)
+
+The version of the data for the blog post is saved in the [data_disruptions release](https://github.com/vla6/Blog_naics_nn/releases/tag/data_disruptions)
 
 Table data is in the top level in the "tables.xlsx" document.
 
