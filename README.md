@@ -11,7 +11,7 @@ Table data is in the top level in the "tables.xlsx" document.
 
 Code is at the top level; notebooks would run in order. Metrics are collected and summarized in 80_perf_summary.ipynb.
 
-## Running Code
+##### Running Code
 
 First, download the SBA Loans Dataset from Kaggle.
 
@@ -21,3 +21,8 @@ Then, change setup.py
   * temp_path should point to a writeable directory on your system
 
 For more information on hardware requirements and package installation, see: https://github.com/vla6/Blog_gnn_naics?tab=readme-ov-file#blog_gnn_naics
+
+
+## Towards Data Science A Deeper Dive into Entity Embeddings with Stochastic Randomization
+
+See subfolder "\_A_embeddings" and its README.md
