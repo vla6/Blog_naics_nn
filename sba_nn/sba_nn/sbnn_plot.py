@@ -147,3 +147,59 @@ def plot_epoch_agg(history,
 
     if use_ax is None:
         return fig
+    
+    
+#
+# Bar plot for top values
+# Used for SHAP
+#
+
+# Single bar
+def barh_top_n(data, n=10, x = 'variable', y='value_abs',
+              ylabel=None, xlabel=None,
+              ax = None, title=None):
+    data = data.copy() \
+        .sort_values(y, ascending=False) \
+        .head(n) 
+    x_type = pd.CategoricalDtype(categories = data[x])
+    data[x] = data[x].astype(x_type)
+    if ax is None:
+        fig, ax = plt.subplots()
+    data.plot(x=x, y=y, kind='barh', ax=ax, legend=None)
+    ax.invert_yaxis()
+    ax.set_ylabel(ylabel)
+    if title is not None:
+        ax.set_title(title)
+        
+# Paired or other comparison bar
+def barh_top_n_pair(data, n=10, x = 'variable', y='value_abs',
+                    columns='model',
+                    x_order = None,
+                  ylabel=None, xlabel=None,
+                  ax = None, title=None,
+                    legend_title='model',
+                   legend_map = None):
+    
+    keep_cat = data.sort_values(y, ascending=False) \
+        .drop_duplicates(x) \
+        .head(n) \
+        [[x]]
+    data = data.merge(keep_cat, on=x) 
+    if x_order is None:
+        x_order = keep_cat[x].to_list()
+    x_type = pd.CategoricalDtype(categories = x_order)
+    data[x] = data[x].astype(x_type)
+    data_pivot = data.pivot(index=x, columns=columns, values=y)
+    if ax is None:
+        fig, ax = plt.subplots()
+    data_pivot.plot(kind='barh', ax=ax)
+    ax.invert_yaxis()
+    ax.set_ylabel(ylabel)
+    if title is not None:
+        ax.set_title(title)
+    if legend_map is not None:
+        h, l = ax.get_legend_handles_labels()
+        labels = [legend_map[x] for x in l]
+        ax.legend(labels=labels, title=legend_title)
+    else:
+        ax.legend(title=legend_title)

@@ -1,5 +1,6 @@
 tmp/
-A_target_count_encoding/tmp/
+_A_embeddings/tmp/
+_A_embeddings/to_do.txt
 
 to_do.txt
 
