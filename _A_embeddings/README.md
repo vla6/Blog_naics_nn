@@ -3,8 +3,7 @@ Work for Towards Data Science
 
 Visualizations and SHAP analysis of the effects random injection of "unseen" encoding values during neural network training using a custom data generator.  
 
-## Towards Data Science A Deeper Dive into Entity Embeddings with Stochastic Randomization
-
+## Towards Data Science [Visualizing Stochastic Regularization for Entity Embeddings](https://medium.com/towards-data-science/visualizing-stochastic-regularization-for-entity-embeddings-c0109ced4a3a)
 
 Model performance data is in performance_metrics.pdf (.xlsx)
 

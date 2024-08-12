@@ -23,6 +23,6 @@ Then, change setup.py
 For more information on hardware requirements and package installation, see: https://github.com/vla6/Blog_gnn_naics?tab=readme-ov-file#blog_gnn_naics
 
 
-## Towards Data Science A Deeper Dive into Entity Embeddings with Stochastic Randomization
+## Towards Data Science [Visualizing Stochastic Regularization for Entity Embeddings](https://medium.com/towards-data-science/visualizing-stochastic-regularization-for-entity-embeddings-c0109ced4a3a)
 
 See subfolder "\_A_embeddings" and its README.md
