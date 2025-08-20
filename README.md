@@ -3,7 +3,7 @@ Work for Towards Data Science
 
 Demonstrating random injection of "unseen" encoding values during neural network training using a custom data generator.  
 
-![Image showing overfitting with random groupings of categorical features, where hierarchical blending performance lags other methods](https://github.com/vla6/vla6/blob/main/images/Data_Disruptions_Teaser.png)
+![Line plots that show that model performance for unseen codes increases drastically with stochastic regularization](https://github.com/vla6/vla6/blob/main/images/Data_Disruptions_Teaser.png)
 
 ## Data Disruptions to Elevate Entity Embeddings
 
