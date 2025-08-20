@@ -3,9 +3,11 @@ Work for Towards Data Science
 
 Visualizations and SHAP analysis of the effects random injection of "unseen" encoding values during neural network training using a custom data generator.  
 
+![tSNE visualization of unmodified data and data with random nulls injected, showing that missing values move towards the center in embedding space with stochastic randomization](https://github.com/vla6/vla6/blob/main/images/Visualizing_Entity_Embeddings_Teaser.png)
+
 ## Visualizing Stochastic Regularization for Entity Embeddings
 
-### Read the article at [Medium](https://medium.com/towards-data-science/visualizing-stochastic-regularization-for-entity-embeddings-c0109ced4a3a) or [TDS](https://towardsdatascience.com/visualizing-stochastic-regularization-for-entity-embeddings-c0109ced4a3a/))
+### Read the article at [Medium](https://medium.com/towards-data-science/visualizing-stochastic-regularization-for-entity-embeddings-c0109ced4a3a) or [TDS](https://towardsdatascience.com/visualizing-stochastic-regularization-for-entity-embeddings-c0109ced4a3a/)
 
 Model performance data is in performance_metrics.pdf (.xlsx)
 
